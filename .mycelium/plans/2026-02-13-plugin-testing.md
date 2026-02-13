@@ -97,7 +97,7 @@ Cross-reference rules against official docs and real plugin examples.
 ---
 
 ### Task 1.3: Define Quality Dimensions & Metrics
-**Status:** [ ]
+**Status:** [x]
 **Complexity:** M
 **blockedBy:** [1.2]
 **blocks:** [3.1, 3.2]
