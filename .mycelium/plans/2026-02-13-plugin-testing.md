@@ -160,7 +160,7 @@ Review architecture with focus on extensibility and maintainability.
 ---
 
 ### Task 2.2: Create Skills Validator Module
-**Status:** [ ]
+**Status:** [x]
 **Complexity:** M
 **blockedBy:** [2.1]
 **blocks:** [4.1]
@@ -530,7 +530,7 @@ Run scoring with various test results (100% pass, 50% pass, 0% tests). Verify sc
 ## Phase 3: Quality Scoring System
 
 ### Task 3.1: Implement Structural Scoring Engine
-**Status:** [ ]
+**Status:** [x] `384c15c`
 **Complexity:** M
 **blockedBy:** [1.3, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7]
 **blocks:** [3.4]
@@ -649,7 +649,7 @@ Generate reports for 3 plugins, verify recommendations are actionable.
 ## Phase 4: Integration & Test Runner
 
 ### Task 4.1: Build Integrated Test Runner
-**Status:** [ ]
+**Status:** [x] `489ec2d`
 **Complexity:** L
 **blockedBy:** [2.2, 2.3, 2.4, 2.5, 2.6, 2.7]
 **blocks:** [4.2]
