@@ -55,18 +55,62 @@ See [IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md) for complete roadmap:
 ### Prerequisites
 
 - Python 3.8 or higher
-- pip package manager
+- [uv](https://github.com/astral-sh/uv) or pip package manager
 - Git (optional, for version control)
 
-### Setup
+### Option 1: Install with pipx (Recommended)
+
+Install and run directly without cloning:
+
+```bash
+# Install pipx if you don't have it
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install the plugin tester
+pipx install git+https://github.com/jason-hchsieh/claude-plugin-tester.git
+
+# Run commands
+claude-plugin-test discover
+claude-plugin-test validate --plugin my-plugin
+claude-plugin-test test --path ~/.claude/plugins/cache/
+plugin-validate --plugin my-plugin
+plugin-score --plugin my-plugin
+```
+
+### Option 2: Install with uv (For Development)
+
+```bash
+# Install uv if you don't have it
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Clone the repository
+git clone git@github.com:jason-hchsieh/claude-plugin-tester.git
+cd claude-plugin-tester
+
+# Create virtual environment and install dependencies
+uv venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install in editable mode with dev dependencies
+uv pip install -e ".[dev]"
+
+# Verify installation
+pytest tests/unit/ -v
+```
+
+### Option 3: Traditional pip
 
 ```bash
 # Clone the repository
 git clone git@github.com:jason-hchsieh/claude-plugin-tester.git
 cd claude-plugin-tester
 
+# Create virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
 # Install dependencies
-pip install -r requirements.txt
+pip install -e ".[dev]"
 
 # Verify installation
 pytest tests/unit/ -v
@@ -79,7 +123,29 @@ Expected output:
 
 ## Quick Start
 
-### Validate a Skill
+### CLI Usage (After pipx install)
+
+```bash
+# Discover all plugins
+claude-plugin-test discover --path ~/.claude/plugins/cache/
+
+# Validate a specific plugin
+claude-plugin-test validate --plugin my-awesome-plugin
+
+# Run full test suite
+claude-plugin-test test --path ~/.claude/plugins/cache/
+
+# Score a plugin
+claude-plugin-test score --plugin my-awesome-plugin
+
+# Or use shortcut commands
+plugin-validate --plugin my-awesome-plugin
+plugin-score --plugin my-awesome-plugin
+```
+
+### Python API Usage
+
+#### Validate a Skill
 
 ```python
 from src.validators.skill_validator import SkillValidator
@@ -152,20 +218,95 @@ print(f"\nAverage Score: {summary['avg_structural_score']:.1f}/100")
 print(f"Plugins with Issues: {summary['plugins_with_errors']}")
 ```
 
+## CLI Reference
+
+### Commands
+
+#### `claude-plugin-test discover`
+Discover plugins in a directory.
+
+```bash
+claude-plugin-test discover [--path PATH] [--filter PATTERN]
+
+Options:
+  --path PATH        Path to plugins directory (default: ~/.claude/plugins/cache/)
+  --filter PATTERN   Filter plugins by name pattern (glob)
+
+Examples:
+  claude-plugin-test discover
+  claude-plugin-test discover --path ./my-plugins/
+  claude-plugin-test discover --filter "database-*"
+```
+
+#### `claude-plugin-test validate`
+Validate a specific plugin.
+
+```bash
+claude-plugin-test validate --plugin NAME [--path PATH]
+
+Options:
+  --plugin NAME   Plugin name to validate (required)
+  --path PATH     Path to plugins directory (default: ~/.claude/plugins/cache/)
+
+Examples:
+  claude-plugin-test validate --plugin my-awesome-plugin
+  plugin-validate --plugin my-awesome-plugin  # Shortcut
+```
+
+#### `claude-plugin-test test`
+Run full test suite on all plugins.
+
+```bash
+claude-plugin-test test [--path PATH] [--filter PATTERN] [--workers N]
+
+Options:
+  --path PATH        Path to plugins directory (default: ~/.claude/plugins/cache/)
+  --filter PATTERN   Filter plugins by name pattern
+  --workers N        Number of parallel workers (default: 4)
+
+Examples:
+  claude-plugin-test test
+  claude-plugin-test test --workers 8
+  claude-plugin-test test --filter "my-*" --workers 2
+```
+
+#### `claude-plugin-test score`
+Score plugin quality.
+
+```bash
+claude-plugin-test score --plugin NAME [--path PATH]
+
+Options:
+  --plugin NAME   Plugin name to score (required)
+  --path PATH     Path to plugins directory (default: ~/.claude/plugins/cache/)
+
+Examples:
+  claude-plugin-test score --plugin my-awesome-plugin
+  plugin-score --plugin my-awesome-plugin  # Shortcut
+```
+
+### Shortcut Commands
+
+For convenience, two shortcut commands are available:
+
+- `plugin-validate` - Alias for `claude-plugin-test validate`
+- `plugin-score` - Alias for `claude-plugin-test score`
+
 ## Project Structure
 
 ```
 claude-plugin-tester/
 ├── README.md                           # This file
+├── pyproject.toml                      # Modern Python project config (uv/pipx)
 ├── IMPLEMENTATION_GUIDE.md             # Complete implementation roadmap (6.4K words)
 ├── PROGRESS_SUMMARY.md                 # Session summary and metrics (4.5K words)
-├── requirements.txt                    # Python dependencies
-├── pytest.ini                          # Test configuration
+├── requirements.txt                    # Legacy pip dependencies (use pyproject.toml)
 │
 ├── docs/
 │   └── architecture.md                 # Complete architecture design (30K words)
 │
-├── src/                                # Production code (691 lines)
+├── src/                                # Production code (~900 lines)
+│   ├── cli.py                          # Command-line interface (CLI entry points)
 │   ├── runner.py                       # TestRunner orchestration (292 lines)
 │   │
 │   ├── models/
